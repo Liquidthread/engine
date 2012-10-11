@@ -13,15 +13,18 @@ module Locomotive
       #
       class Consume < ::Liquid::Block
 
-        Syntax = /(#{::Liquid::VariableSignature}+)\s*from\s*(#{::Liquid::QuotedString}+)/
+        Syntax = /(#{::Liquid::VariableSignature}+)\s*from\s*(#{::Liquid::QuotedString}+)\s*([\w:\s',]*)/
 
         def initialize(tag_name, markup, tokens, context)
           if markup =~ Syntax
             @target = $1
             @url = $2.gsub(/['"]/, '')
             @options = {}
-            markup.scan(::Liquid::TagAttributes) do |key, value|
-              @options[key] = value if key != 'http'
+            result = markup.scan(Syntax)
+            pairs = result && result.length > 0 && result[0].length > 2 ? result[0][2] : []
+            pairs.scan(::Liquid::TagAttributes).each do |key, value|
+              val = value.gsub(/(^\'|\'$)/, '')
+              @options[key] = (key == 'format' ? val.to_sym : val) 
             end
             @expires_in = (@options.delete('expires_in') || 0).to_i
             @cache_key = Digest::SHA1.hexdigest(@target)

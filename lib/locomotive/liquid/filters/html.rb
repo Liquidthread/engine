@@ -73,6 +73,14 @@ module Locomotive
           asset_url(input)
         end
 
+        def theme_media_url(input)
+          return '' if input.nil?
+
+          input = "media/#{input}" unless input.starts_with?('/')
+
+          asset_url(input)
+        end
+
         # Write a theme image tag
         # input: name of file including folder
         # example: 'about/myphoto.jpg' | theme_image # <img src="images/about/myphoto.jpg">

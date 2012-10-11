@@ -7,6 +7,10 @@ module Locomotive
           (index.to_i + 1) % modulo == 0 ? word : ''
         end
 
+        def integer(input)
+          input.to_i
+        end
+
         def first(input)
           input.first
         end
@@ -15,6 +19,16 @@ module Locomotive
           input.last
         end
 
+        def json(input)
+          if input.respond_to?(:_source)
+            input.send(:_source).to_json
+          elsif input.respond_to?(:collection)
+            input.send(:collection).to_json
+          else
+            input
+          end
+        end
+        
         def default(input, value)
           input.blank? ? value : input
         end

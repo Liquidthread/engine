@@ -180,9 +180,9 @@ module Locomotive
     def escape_shortcut_urls(text)
       return if text.blank?
 
-      text.gsub(/[("'](\/(stylesheets|javascripts|images|media)\/(([^;.]+)\/)*([a-zA-Z_\-0-9]+)\.[a-z]{2,3})[)"']/) do |path|
+      text.gsub(/[("'](\/(stylesheets|javascripts|images|media|fonts)\/(([^;.]+)\/)*([a-zA-Z_\-0-9]+)\.[a-z]{2,4})[#?]*[a-zA-Z_\-0-9]*[)"']/) do |path|
 
-        sanitized_path = path.gsub(/[("')]/, '').gsub(/^\//, '')
+        sanitized_path = path.gsub(/[("'\?#)]\w*/, '').gsub(/^\//, '')
 
         if asset = self.site.theme_assets.where(:local_path => sanitized_path).first
           "#{path.first}#{asset.source.url}#{path.last}"

@@ -25,6 +25,14 @@ module Locomotive
           ::RedCloth.new(input).to_html
         end
 
+        def split(input, arguments)
+          input.to_s.split(arguments.to_s)
+        end
+
+        def join(input, arguments=' ')
+          input.join(arguments).to_s
+        end
+
       end
 
       ::Liquid::Template.register_filter(Text)

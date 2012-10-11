@@ -11,5 +11,17 @@ module Locomotive
       end
     end
 
+    def options_for_seo_image(site_param)
+      site_param.theme_assets.reduce({}) do |options, asset|
+        if asset.content_type == :image
+          options.merge({
+            asset.source_filename => ThemeAssetUploader.url_for(site_param, asset.local_path) 
+          })
+        else
+          options
+        end
+      end
+    end
+    
   end
 end

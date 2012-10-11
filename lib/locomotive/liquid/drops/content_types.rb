@@ -30,7 +30,6 @@ module Locomotive
           klass = @content_type.entries.klass # delegate to the proxy class
 
           if (meth.to_s =~ /^group_by_(.+)$/) == 0
-
             field = get_field_by_name($1)
             if (!field.nil? and field['type'] == "tag_set")
               klass.send(:group_by_tag, $1, @content_type.order_by_definition)

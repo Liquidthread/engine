@@ -141,7 +141,8 @@ module Locomotive
         'locale'            => I18n.locale.to_s,
         'default_locale'    => current_site.default_locale.to_s,
         'locales'           => current_site.locales,
-        'current_user'      => Locomotive::Liquid::Drops::CurrentUser.new(current_locomotive_account)
+        'current_user'      => Locomotive::Liquid::Drops::CurrentUser.new(current_locomotive_account),
+        'tags'              => Locomotive::Liquid::Drops::Tags.new
       }
     end
 

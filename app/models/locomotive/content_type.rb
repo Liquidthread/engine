@@ -61,12 +61,13 @@ module Locomotive
     end
 
     def ordered_entries(conditions = {})
-      _order_by_definition = (conditions || {}).delete(:order_by).try(:split) || self.order_by_definition
+      conditions = translate_scope_by_id(conditions || {})
+      _order_by_definition = conditions.delete(:order_by).try(:split) || self.order_by_definition
       self.entries.order_by([_order_by_definition]).where(conditions)
     end
 
     def groupable?
-      !!self.group_by_field && %w(select belongs_to).include?(group_by_field.type)
+      !!self.group_by_field && %w(select belongs_to tag_set).include?(group_by_field.type)
     end
 
     def group_by_field
@@ -77,6 +78,8 @@ module Locomotive
       if self.groupable?
         if group_by_field.type == 'select'
           self.entries.group_by_select_option(self.group_by_field.name, self.order_by_definition)
+        elsif group_by_field.type == 'tag_set'
+          self.entries.group_by_tag(self.group_by_field.name, self.order_by_definition)
         else
           group_by_belongs_to_field(self.group_by_field)
         end
@@ -195,6 +198,52 @@ module Locomotive
         # for now, does not allow external classes
         field.errors.add :class_name, :security
       end
+    end
+
+    # Translates with_scope conditions that use strings to proper scopes by id for field types that need it
+    # Example:
+    # "field_name: given_value" ----> "field_name_id: <id of select option with name == given_value>"
+    def translate_scope_by_id(conditions = {})
+      translated_conditions = {}
+      types_needing_translation = %w(select tag_set)
+      conditions.each_pair do |key, value|
+        key_parts = key.split('.')
+        field_name = key_parts[0]
+        key_parts.length > 1 ? search_modifier = key_parts[1] : ""
+
+        field = self.entries_custom_fields.where({"name" => field_name}).first
+
+        if( !field.nil? && types_needing_translation.include?(field.type) )
+          if(field.type == "select")
+            if value.empty?
+              # with_scope select_field = "" should give the entries not assigned a value
+              translated_conditions["#{field_name}_id"] = nil
+            else
+              option = field.select_options.where({'name' => value}).first
+              #if there's no option by that name, then no entries will be given - the Id is one that's never been used
+              #if there is an option, find the entries by that option's id
+              option.nil? ? translated_conditions["#{field_name}_id"] = BSON::ObjectId.new : translated_conditions["#{field_name}_id"] = option._id
+            end
+          elsif(field.type == "tag_set")
+            if value.empty?
+              translated_conditions["#{field_name.singularize}_ids"] = nil
+            else
+              tag_list = value.split(',').map {|tag_name| CustomFields::Types::TagSet::Tag.find_tag_by_name(tag_name)}
+              tag_list.delete_if{|tag| tag.nil?}
+              if tag_list.blank?
+                translated_conditions["raw_#{field_name.singularize}_ids"] = []
+              else
+                translated_conditions["raw_#{field_name.singularize}_ids"] = {"$all" => tag_list.map{|x| x['_id']} }
+              end
+            end
+          else
+            translated_conditions[key] = value
+          end
+        else
+          translated_conditions[key] = value
+        end
+      end
+      translated_conditions
     end
 
   end

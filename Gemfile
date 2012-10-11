@@ -52,6 +52,8 @@ group :test do
   gem 'json_spec'
 
   gem 'database_cleaner'
+  gem 'custom_fields', :git => 'git://github.com/Liquidthread/custom_fields.git'
+  gem 'locomotive_liquid', :git => 'git://github.com/Liquidthread/liquid.git'
 
   # gem 'debugger', :git => 'git://github.com/cldwalker/debugger.git'
 end

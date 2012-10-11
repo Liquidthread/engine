@@ -32,6 +32,12 @@ describe 'Locomotive rendering system' do
       context['locale'].should == 'en'
     end
 
+
+    it 'has access to tags' do
+      context = @controller.send(:locomotive_context)
+      context['tags'].should_not == nil
+    end
+
   end
 
   context 'setting the response' do

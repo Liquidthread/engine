@@ -30,7 +30,13 @@ module Locomotive
           klass = @content_type.entries.klass # delegate to the proxy class
 
           if (meth.to_s =~ /^group_by_(.+)$/) == 0
-            klass.send(:group_by_select_option, $1, @content_type.order_by_definition)
+
+            field = get_field_by_name($1)
+            if (!field.nil? and field['type'] == "tag_set")
+              klass.send(:group_by_tag, $1, @content_type.order_by_definition)
+            else
+              klass.send(:group_by_select_option, $1, @content_type.order_by_definition)
+            end
           elsif (meth.to_s =~ /^(.+)_options$/) == 0
             klass.send(:"#{$1}_options").map { |option| option['name'] }
           else
@@ -43,6 +49,12 @@ module Locomotive
         def collection
           @collection ||= @content_type.ordered_entries(@context['with_scope'])
         end
+
+
+        def get_field_by_name(name)
+          @content_type.entries_custom_fields.detect{|x| x.name==name}
+        end
+
       end
 
     end

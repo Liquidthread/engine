@@ -41,9 +41,23 @@ class Locomotive.Views.ContentEntries.FormView extends Locomotive.Views.Shared.F
 
     @enable_many_to_many_fields()
 
+    @enable_tag_set_fields()
+
     @slugify_label_field()
 
+    @bind_keyup_in_text_fields()
+
     return @
+
+  bind_keyup_in_text_fields: ->
+    _.each @$('li.input.stringish input[type=text]'), (textfield) =>
+      alert
+      $(textfield).bind 'keyup', (event) =>
+        input = $(event.target)
+        input_name = input[0].name.match(/\w*\[(\w*)\]/)[1]
+        data = {}
+        data[input_name] = input.val()
+        @model.set(data)
 
   enable_checkboxes: ->
     @$('li.input.toggle input[type=checkbox]').checkToggle()
@@ -115,6 +129,21 @@ class Locomotive.Views.ContentEntries.FormView extends Locomotive.Views.Shared.F
         @_many_to_many_field_views.push(view)
 
         @$("##{@model.paramRoot}_#{name}_input label").after(view.render().el)
+
+  enable_tag_set_fields: ->
+    _.each @model.get('tag_set_custom_fields'), (name) =>
+      html_id = "#{@model.paramRoot}_#{name}"
+      @$("##{html_id}").autoSuggest(tag_set.items, {startText: "", emptyText:"",
+      preFill:@$("##{html_id}").val(),
+      asHtmlID:"#{html_id}",
+      retrieveLimit: 5,
+      neverSubmit:true,
+      enterAsTab: true,
+      ignoreLeadingSpace: true,
+      tabUsesSearchValue: true,
+      hideEmptySearchResults: true,
+      searchResultsLeftMargin: 160})
+
 
   slugify_label_field: ->
     @$('li.input.highlighted > input[type=text]').slugify(target: @$('#content_entry__slug'))

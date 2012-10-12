@@ -6,7 +6,7 @@ class Locomotive.Models.Site extends Backbone.Model
 
   initialize: ->
     # Be careful, domains_without_subdomain becomes domains
-    domains = _.map @get('domains_without_subdomain' or []), (name) =>
+    domains = _.map @get('domains_without_subdomain') or [], (name) =>
       new Locomotive.Models.Domain(name: name)
 
     memberships = new Locomotive.Models.MembershipsCollection(@get('memberships'))
@@ -30,5 +30,3 @@ class Locomotive.Models.Site extends Backbone.Model
 class Locomotive.Models.CurrentSite extends Locomotive.Models.Site
 
   url: "#{Locomotive.mounted_on}/current_site"
-
-

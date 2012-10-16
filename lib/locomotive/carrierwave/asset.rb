@@ -69,24 +69,6 @@ module Locomotive
           model.respond_to?(:stylesheet_or_javascript?) and model.stylesheet_or_javascript? and model.compile?
         end
 
-        def create_local_assets_temp_directory!
-          local_assets_temp_directory = Rails.root.join( 'tmp', 'sprockets_fog_local_assets' )
-          Dir.mkdir( local_assets_temp_directory ) unless File.directory? local_assets_temp_directory
-
-          asset_type_folder = model.stylesheet? ? "stylesheets" : "javascripts"
-
-          asset_type_temp_directory = local_assets_temp_directory.join( asset_type_folder )
-          Dir.mkdir( asset_type_temp_directory ) unless File.directory? asset_type_temp_directory
-
-          model.site.theme_assets.where( folder: asset_type_folder ).each do |asset|
-            File.open( asset_type_temp_directory.join( asset.source_filename ), "w" ) do |f|
-              f.write( asset.source.read )
-            end
-          end
-
-          asset_type_temp_directory
-        end
-
         def compile_js_css(*args)
           cache_stored_file! if !cached?
 
@@ -105,16 +87,39 @@ module Locomotive
 
           assets.append_path( File.dirname( path ) )
 
-          # if ::CarrierWave::Uploader::Base.storage == ::CarrierWave::Storage::Fog
-          assets.append_path( create_local_assets_temp_directory! )
-          # assets.append_path( File.expand_path( model.source.store_dir, Rails.public_path ) )
+          if remote_storage? && model.stylesheet?
+            assets.append_path( create_local_assets_temp_directory! )
+          else
+            assets.append_path( File.expand_path( model.source.store_dir, Rails.public_path ) )
+          end
 
           # and finaly compile all the stuff
-          asset = Sprockets::ProcessedAsset.new( assets, path, Pathname.new(path) )
-
+          asset = Sprockets::BundledAsset.new( assets, path, Pathname.new( path ) )
           asset.write_to( current_path )
         rescue
           raise ::CarrierWave::ProcessingError, "#{$!} #{$@}"
+        end
+
+        def remote_storage?
+          ::CarrierWave::Uploader::Base.storage == ::CarrierWave::Storage::Fog
+        end
+
+        def create_local_assets_temp_directory!
+          local_assets_temp_directory = Rails.root.join( 'tmp', 'sprockets_fog_local_assets' )
+          Dir.mkdir( local_assets_temp_directory ) unless File.directory? local_assets_temp_directory
+
+          asset_type_folder = model.stylesheet? ? "stylesheets" : "javascripts"
+
+          asset_type_temp_directory = local_assets_temp_directory.join( asset_type_folder )
+          Dir.mkdir( asset_type_temp_directory ) unless File.directory? asset_type_temp_directory
+
+          model.site.theme_assets.where( folder: asset_type_folder ).each do |asset|
+            File.open( asset_type_temp_directory.join( asset.source_filename ), "w" ) do |f|
+              f.write( asset.source.read )
+            end
+          end
+
+          asset_type_temp_directory
         end
 
       end

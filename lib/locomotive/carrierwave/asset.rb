@@ -87,14 +87,15 @@ module Locomotive
 
           assets.append_path( File.dirname( path ) )
 
-          if remote_storage? && model.stylesheet?
+          # and finaly compile all the stuff
+          asset = if model.stylesheet?
             assets.append_path( create_local_assets_temp_directory! )
+            Sprockets::ProcessedAsset.new( assets, path, Pathname.new(path) )
           else
             assets.append_path( File.expand_path( model.source.store_dir, Rails.public_path ) )
+            Sprockets::BundledAsset.new( assets, path, Pathname.new( path ) )
           end
 
-          # and finaly compile all the stuff
-          asset = Sprockets::BundledAsset.new( assets, path, Pathname.new( path ) )
           asset.write_to( current_path )
         rescue
           raise ::CarrierWave::ProcessingError, "#{$!} #{$@}"

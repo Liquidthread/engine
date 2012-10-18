@@ -87,6 +87,7 @@ module Locomotive
 
           assets.append_path( File.dirname( path ) )
 
+          #
           # and finaly compile all the stuff
           asset = if model.stylesheet?
             assets.append_path( create_local_assets_temp_directory! )

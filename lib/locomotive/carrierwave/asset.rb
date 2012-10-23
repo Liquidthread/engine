@@ -87,12 +87,13 @@ module Locomotive
 
           assets.append_path( File.dirname( path ) )
 
-          #
+          #move assets local in case they're stored remotely
+          assets.append_path( create_local_assets_temp_directory! )
+
           # and finaly compile all the stuff
           asset = if model.stylesheet?
-            assets.append_path( create_local_assets_temp_directory! )
+            @file.instance_variable_set(:@content_type, "text/css")
             Sprockets::ProcessedAsset.new( assets, path, Pathname.new(path) )
-            @file.content_type = "text/css"
           else
             assets.append_path( File.expand_path( model.source.store_dir, Rails.public_path ) )
             Sprockets::BundledAsset.new( assets, path, Pathname.new( path ) )

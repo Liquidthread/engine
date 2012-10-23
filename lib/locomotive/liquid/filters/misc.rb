@@ -20,7 +20,9 @@ module Locomotive
         end
 
         def json(input)
-          if input.respond_to?(:_source)
+          if input.respond_to?(:to_json)
+            input.send(:to_json)
+          elsif input.respond_to?(:_source)
             input.send(:_source).to_json
           elsif input.respond_to?(:collection)
             input.send(:collection).to_json

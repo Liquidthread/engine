@@ -92,6 +92,7 @@ module Locomotive
           asset = if model.stylesheet?
             assets.append_path( create_local_assets_temp_directory! )
             Sprockets::ProcessedAsset.new( assets, path, Pathname.new(path) )
+            @file.content_type = "text/css"
           else
             assets.append_path( File.expand_path( model.source.store_dir, Rails.public_path ) )
             Sprockets::BundledAsset.new( assets, path, Pathname.new( path ) )

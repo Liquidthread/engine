@@ -20,17 +20,21 @@ module Locomotive
         end
 
         def json(input)
-          if input.respond_to?(:to_json)
-            input.send(:to_json)
-          elsif input.respond_to?(:_source)
+          if input.respond_to?(:_source)
             input.send(:_source).to_json
           elsif input.respond_to?(:collection)
-            input.send(:collection).to_json
+            input.send(:collection).map do |collection_item|
+              collection_item.attributes.keep_if do |key, value|
+                !%w(site_id created_at updated_at custom_fields_recipe _type _visible content_type_id).index(key)
+              end
+            end.to_json
+          elsif input.respond_to?(:to_json)
+            input.send(:to_json) rescue {}.to_json
           else
             input
           end
         end
-        
+
         def default(input, value)
           input.blank? ? value : input
         end

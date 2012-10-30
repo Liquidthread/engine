@@ -95,6 +95,7 @@ module Locomotive
             @file.instance_variable_set(:@content_type, "text/css")
             Sprockets::ProcessedAsset.new( assets, path, Pathname.new(path) )
           else
+            @file.instance_variable_set(:@content_type, "application/javascript")
             assets.append_path( File.expand_path( model.source.store_dir, Rails.public_path ) )
             Sprockets::BundledAsset.new( assets, path, Pathname.new( path ) )
           end

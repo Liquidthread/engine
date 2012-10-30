@@ -3,6 +3,14 @@ module Locomotive
     module Filters
       module Misc
 
+        def collect(input, field)
+          map(input, field)
+        end
+        
+        def map(input, field)
+          input.map(&field.to_sym)
+        end
+        
         def modulo(word, index, modulo)
           (index.to_i + 1) % modulo == 0 ? word : ''
         end

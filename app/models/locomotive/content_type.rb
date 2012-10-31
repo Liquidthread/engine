@@ -61,8 +61,9 @@ module Locomotive
     end
 
     def ordered_entries(conditions = {})
-      conditions = translate_scope_by_id(conditions || {})
-      _order_by_definition = conditions.delete(:order_by).try(:split) || self.order_by_definition
+      conditions = translate_scope_by_id(conditions || {}).stringify_keys
+      _overriden_order_by = conditions.delete("order_by").try(:split)
+      _order_by_definition = _overriden_order_by || self.order_by_definition
       self.entries.order_by([_order_by_definition]).where(conditions)
     end
 

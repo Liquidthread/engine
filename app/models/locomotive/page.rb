@@ -97,6 +97,10 @@ module Locomotive
       self.to_presenter.as_json
     end
 
+    def content_type
+      self.site.content_types.to_a.find {|x| x.slug == self.target_klass_slug}
+    end
+
     protected
 
     def do_not_remove_index_and_404_pages

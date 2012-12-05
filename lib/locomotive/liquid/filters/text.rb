@@ -3,6 +3,10 @@ module Locomotive
     module Filters
       module Text
 
+        def encode(input)
+          URI.encode(input || '')
+        end
+        
         def underscore(input)
           input.to_s.gsub(' ', '_').gsub('/', '_').underscore
         end
@@ -26,9 +30,9 @@ module Locomotive
         end
 
         def split(input, arguments)
-          input.to_s.split(arguments.to_s)
+          input.to_s.split(arguments.to_s.gsub("/n","\n"))
         end
-
+        
         def join(input, arguments=' ')
           input.join(arguments).to_s
         end

@@ -22,6 +22,8 @@ class Locomotive.Views.ThemeAssets.IndexView extends Backbone.View
 
     @render_media()
 
+    @render_documents()
+    
     return @
 
   build_uploader: ->
@@ -64,6 +66,9 @@ class Locomotive.Views.ThemeAssets.IndexView extends Backbone.View
 
   render_media: ->
     @render_list 'media', @options.media, Locomotive.Views.ThemeAssets.ListView, ich.media_list
+
+  render_documents: ->
+    @render_list 'documents', @options.documents, Locomotive.Views.ThemeAssets.ListView, ich.documents_list
 
   render_list: (type, collection, view_klass, template) ->
     return if @$("##{type}-anchor").size() == 0

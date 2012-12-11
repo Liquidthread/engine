@@ -13,12 +13,14 @@
   - if can?(:manage, Locomotive::ThemeAsset)
     = render 'list', :name => 'js_and_css', :title => t('.css_and_js'), :empty_message => t('.no_items', :url => new_theme_asset_url)
     = render 'list', :name => 'fonts', :title => t('.fonts'), :empty_message => t('.no_items', :url => new_theme_asset_url)
+    = render 'list', :name => 'documents', :title => t('.documents'), :empty_message => t('.no_items', :url => new_theme_asset_url)
 
 - content_for :backbone_view_data do
   :plain
     snippets:           #{j can?(:manage, Locomotive::Snippet) ? @snippets.map { |snippet| snippet.to_presenter.as_json_for_html_view }.to_json.html_safe : 'null'},
     images:             #{j theme_assets_to_json(@assets[:images]).html_safe},
     media:              #{j theme_assets_to_json(@assets[:media]).html_safe},
+    documents:          #{j can?(:manage, Locomotive::ThemeAsset) ? theme_assets_to_json(@assets[:pdfs]).html_safe : 'null'},
     js_and_css_assets:  #{j can?(:manage, Locomotive::ThemeAsset) ? theme_assets_to_json(@js_and_css_assets).html_safe : 'null'},
     fonts:              #{j can?(:manage, Locomotive::ThemeAsset) ? theme_assets_to_json(@assets[:fonts]).html_safe : 'null'}
 
@@ -46,5 +48,6 @@
 
 - if can?(:manage, Locomotive::ThemeAsset)
   #fonts-anchor
-
+  
+#documents-anchor
 #media-anchor

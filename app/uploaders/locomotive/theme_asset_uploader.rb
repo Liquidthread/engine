@@ -10,7 +10,7 @@ module Locomotive
     end
 
     def extension_white_list
-      %w(jpg jpeg gif pdf doc docx png css scss js coffee swf flv eot svg ttf woff otf ico htc)
+      %w(ogv mp4 jpg jpeg gif pdf doc docx png css scss js coffee swf flv eot svg ttf woff otf ico htc)
     end
 
     def self.url_for(site, path)

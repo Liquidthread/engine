@@ -3,6 +3,10 @@ module Locomotive
     module Filters
       module Text
 
+        def cgi_escape(input)
+          CGI.escape(input || '')
+        end
+
         def encode(input)
           URI.encode(input || '')
         end

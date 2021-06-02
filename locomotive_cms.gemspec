@@ -55,7 +55,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'rmagick',                         '~> 2.12.2'
   s.add_dependency 'carrierwave-mongoid',             '~> 0.2.1'
   s.add_dependency 'fog',                             '~> 1.3.1'
-  s.add_dependency 'dragonfly',                       '~> 0.9.8'
+  s.add_dependency 'dragonfly',                       '>= 0.9.8', '< 1.5.0'
   s.add_dependency 'rack-cache',                      '~> 1.1'
   s.add_dependency 'mimetype-fu',                     '~> 0.1.2'
 
